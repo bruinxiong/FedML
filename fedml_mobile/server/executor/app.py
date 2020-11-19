@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
 
 from fedml_api.distributed.fedavg.FedAVGAggregator import FedAVGAggregator
 from fedml_api.distributed.fedavg.FedAvgServerManager import FedAVGServerManager
+from fedml_mobile.server.executor.log import __log
 
 from fedml_api.data_preprocessing.MNIST.data_loader import load_partition_data_mnist
 from fedml_api.data_preprocessing.cifar10.data_loader import load_partition_data_cifar10
@@ -19,14 +20,12 @@ from fedml_api.data_preprocessing.cifar100.data_loader import load_partition_dat
 from fedml_api.data_preprocessing.cinic10.data_loader import load_partition_data_cinic10
 from fedml_api.data_preprocessing.shakespeare.data_loader import load_partition_data_shakespeare
 
-from fedml_api.model.deep_neural_networks.mobilenet import mobilenet
-from fedml_api.model.deep_neural_networks.resnet import resnet56
-from fedml_api.model.linear_models.lr import LogisticRegression
-from fedml_api.model.shallow_neural_networks.rnn import RNN_OriginalFedAvg
+from fedml_api.model.cv.mobilenet import mobilenet
+from fedml_api.model.cv.resnet import resnet56
+from fedml_api.model.linear.lr import LogisticRegression
+from fedml_api.model.nlp.rnn import RNN_OriginalFedAvg
 
 from fedml_core.distributed.communication.observer import Observer
-
-from fedml_mobile.server.executor.log import __log
 
 from flask import Flask, request, jsonify
 
@@ -103,7 +102,7 @@ device_id_to_client_id_dict = dict()
 @app.route('/api/register', methods=['POST'])
 def register_device():
     global device_id_to_client_id_dict
-    __log.info("register_device()")
+    # __log.info("register_device()")
     device_id = request.args['device_id']
     registered_client_num = len(device_id_to_client_id_dict)
     if device_id in device_id_to_client_id_dict:

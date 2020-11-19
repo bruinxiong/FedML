@@ -1,8 +1,7 @@
 import logging
-import sys
 from abc import abstractmethod
 
-from mpi4py import MPI
+
 
 from fedml_core.distributed.communication.mpi.com_manager import MpiCommunicationManager
 from fedml_core.distributed.communication.mqtt.mqtt_comm_manager import MqttCommManager
@@ -16,13 +15,15 @@ class ServerManager(Observer):
         self.size = size
         self.rank = rank
 
+        self.backend = backend
         if backend == "MPI":
+            from mpi4py import MPI
             self.com_manager = MpiCommunicationManager(comm, rank, size, node_type="server")
         elif backend == "MQTT":
             HOST = "81.71.1.31"
             # HOST = "broker.emqx.io"
             PORT = 1883
-            self.com_manager = MqttCommManager(HOST, PORT, client_id=rank, client_num=size-1)
+            self.com_manager = MqttCommManager(HOST, PORT, client_id=rank, client_num=size - 1)
         else:
             self.com_manager = MpiCommunicationManager(comm, rank, size, node_type="server")
         self.com_manager.add_observer(self)
@@ -53,9 +54,5 @@ class ServerManager(Observer):
 
     def finish(self):
         logging.info("__finish server")
-        self.com_manager.stop_receive_message()
-        logging.info("sys.exit(0)")
-        MPI.Finalize()
-        MPI.COMM_WORLD.Abort()
-        sys.exit()
-
+        if self.backend == "MPI":
+            MPI.COMM_WORLD.Abort()
